@@ -3,3 +3,8 @@ __pycache__/
 .pytest_cache/
 .env
 *.docx
+instance/
+.env.*
+!.env.example
+.coverage
+htmlcov/

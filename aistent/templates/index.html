@@ -1,31 +1,8 @@
-<!doctype html>
-<html lang="ro">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aistent — Documente și grafice</title>
-  <style>
-    body { font-family: system-ui, sans-serif; background: #f3f5fa; color: #16213b; margin: 0; padding: 40px 20px; }
-    main { max-width: 720px; margin: auto; background: white; border-radius: 18px; padding: 32px; box-shadow: 0 8px 40px #16213b10; }
-    h1 { margin-bottom: 8px; } p { line-height: 1.6; } label { display: block; margin: 24px 0 8px; font-weight: 600; }
-    input, textarea, select { box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid #aeb8cc; border-radius: 8px; font: inherit; }
-    button { margin-top: 24px; background: #3056d3; color: white; border: 0; border-radius: 8px; padding: 14px 20px; font: inherit; cursor: pointer; }
-    .error { color: #a31529; } small { display: block; margin-top: 20px; color: #56627a; }
-  </style>
-</head>
-<body><main>
-  <h1>Aistent</h1>
-  <p>Creează documente Word, PDF, tabele Excel, grafice și lucrări academice structurate din propriul conținut.</p>
-  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
-  <form action="/documents" method="post">
-    <label for="format">Tipul exportului</label>
-    <select id="format" name="format"><option value="docx">Document Word (.docx)</option><option value="pdf">Document PDF</option><option value="xlsx">Tabel Excel (.xlsx)</option><option value="chart">Grafic cu bare (.png)</option><option value="academic">Lucrare academică (.docx)</option></select>
-    <label for="title">Titlul documentului</label>
-    <input id="title" name="title" maxlength="200" required value="{{ title|default('') }}" placeholder="De exemplu: Cerere de concediu">
-    <label for="content">Conținut / date CSV</label><p>Pentru Excel și grafice: CSV separat prin virgulă, de exemplu:<br>Lună,Venit<br>Ianuarie,1200<br>Februarie,1500</p><p>Pentru lucrări academice poți introduce secțiuni cu <code>## Introducere</code>, <code>## Metodologie</code> etc. Fără aceste marcaje, textul devine introducerea, iar restul secțiunilor rămân de completat.</p>
-    <textarea id="content" name="content" rows="12" maxlength="100000" required placeholder="Scrie conținutul documentului…">{{ content|default('') }}</textarea>
-    <button type="submit">Generează și descarcă</button>
-  </form>
-  <small>Documentele sunt generate în memorie și nu sunt salvate pe server. Aplicația exportă conținutul tău și oferă structură academică; nu redactează cu AI și nu inventează surse bibliografice.</small>
-</main></body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero"><div><span class="eyebrow">DE LA IDEE LA REZULTAT</span><h1>Ce construim<br>astăzi<span class="accent">?</span></h1><p>Documente bine structurate, idei vizuale și răspunsuri utile.<br>Toate, în proiectele tale private.</p><a class="button" href="#new-project">+ Proiect nou</a></div><div class="hero-art" aria-hidden="true"><div class="art-sheet"><span class="art-label">AISTENT / STUDIO</span><div class="art-line long"></div><div class="art-line"></div><div class="art-chart"><i></i><i></i><i></i><i></i><i></i></div><div class="art-line long"></div><div class="art-line"></div></div><span class="art-tag">✦ Ideile prind formă</span></div></section>
+<div class="feature-grid"><div class="feature"><span class="feature-icon blue">▤</span><h3>Documente & proiecte</h3><p>Word, PDF, Excel, PowerPoint și devize.</p><span class="tag">PROCESARE LOCALĂ</span></div><div class="feature"><span class="feature-icon orange">◈</span><h3>Foto & video</h3><p>Editează fotografii și montează clipuri MP4.</p><span class="tag">PREVIZUALIZARE PRIVATĂ</span></div><div class="feature"><span class="feature-icon purple">✦</span><h3>Asistent inteligent</h3><p>Text, analiză vizuală și căutare cu surse.</p><span class="tag">API CONFIGURABIL</span></div></div>
+<section class="section-head"><div><span class="eyebrow">CONTINUĂ DE UNDE AI RĂMAS</span><h2>Proiectele tale</h2></div><span class="counter">{{ projects|length }} proiecte</span></section>
+<div class="project-grid">{% for project in projects %}<a class="project-card" href="{{ url_for('workspace.project_view', project_id=project.id) }}"><span class="folder">▱</span><h3>{{ project.title }}</h3><p>{{ project.created }} · Privat</p><span class="project-open">Deschide proiectul ↗</span></a>{% else %}<div class="empty card"><h3>Un loc pentru următoarea idee.</h3><p class="muted">Creează primul proiect și adaugă documente, fotografii sau videoclipuri.</p></div>{% endfor %}</div>
+<section class="card new-project" id="new-project"><div><span class="eyebrow">ÎNCEPE CEVA NOU</span><h2>O idee, un proiect.</h2><p class="muted">Fișierele și conversațiile vor rămâne împreună.</p></div><form action="{{ url_for('workspace.create_project') }}" method="post"><input type="hidden" name="csrf_token" value="{{ session.csrf }}"><label for="title">Numele proiectului</label><input id="title" name="title" maxlength="200" placeholder="De exemplu: Renovare apartament" required><button type="submit">Creează proiectul →</button></form></section>
+{% endblock %}
