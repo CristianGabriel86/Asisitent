@@ -1,7 +1,7 @@
-"""Aplicația Aistent pentru generarea documentelor Word."""
+"""Aplicația Aistent pentru generarea documentelor, tabelelor și graficelor."""
 from io import BytesIO
 
-from docx import Document
+from aistent.exports import EXPORTS
 from flask import Flask, render_template, request, send_file
 
 
@@ -24,14 +24,15 @@ def create_app():
         # XML 1.0 does not support these control characters.
         if any(ord(char) < 32 and char not in '\n\r\t' for char in title + content):
             return render_template('index.html', error='Textul conține caractere de control nepermise.', title=title, content=content), 400
-        document = Document()
-        document.add_heading(title, level=0)
-        for paragraph in content.splitlines():
-            document.add_paragraph(paragraph)
-        output = BytesIO()
-        document.save(output)
-        output.seek(0)
-        return send_file(output, as_attachment=True, download_name='document.docx', mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        kind = request.form.get('format', 'docx')
+        if kind not in EXPORTS:
+            return render_template('index.html', error='Format necunoscut.', title=title, content=content), 400
+        exporter, filename, mimetype = EXPORTS[kind]
+        try:
+            output = BytesIO(exporter(title, content))
+        except ValueError as error:
+            return render_template('index.html', error=str(error), title=title, content=content), 400
+        return send_file(output, as_attachment=True, download_name=filename, mimetype=mimetype)
 
     @app.errorhandler(413)
     def too_large(error):
