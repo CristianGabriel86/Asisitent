@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aistent — Documente Word</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f3f5fa; color: #16213b; margin: 0; padding: 40px 20px; }
+    main { max-width: 720px; margin: auto; background: white; border-radius: 18px; padding: 32px; box-shadow: 0 8px 40px #16213b10; }
+    h1 { margin-bottom: 8px; } p { line-height: 1.6; } label { display: block; margin: 24px 0 8px; font-weight: 600; }
+    input, textarea { box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid #aeb8cc; border-radius: 8px; font: inherit; }
+    button { margin-top: 24px; background: #3056d3; color: white; border: 0; border-radius: 8px; padding: 14px 20px; font: inherit; cursor: pointer; }
+    .error { color: #a31529; } small { display: block; margin-top: 20px; color: #56627a; }
+  </style>
+</head>
+<body><main>
+  <h1>Aistent</h1>
+  <p>Creează un document Microsoft Word din textul tău. Adaugă un titlu și paragrafele, apoi descarcă fișierul .docx.</p>
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  <form action="/documents" method="post">
+    <label for="title">Titlul documentului</label>
+    <input id="title" name="title" maxlength="200" required value="{{ title|default('') }}" placeholder="De exemplu: Cerere de concediu">
+    <label for="content">Conținut</label>
+    <textarea id="content" name="content" rows="12" maxlength="100000" required placeholder="Scrie conținutul documentului…">{{ content|default('') }}</textarea>
+    <button type="submit">Descarcă documentul Word</button>
+  </form>
+  <small>Documentele sunt generate în memorie și nu sunt salvate pe server. Versiunea inițială exportă textul introdus; redactarea cu AI va putea fi adăugată ulterior.</small>
+</main></body>
+</html>
